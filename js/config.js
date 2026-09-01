@@ -8,9 +8,8 @@ window.ARSALANE_CONFIG = {
   /* Bouton « Espace administration » — application de gestion Django. */
   ADMIN_URL: "https://www.arsalanesoutien.com/gestion/",
 
-  /* Endpoint qui reçoit le formulaire de contact (…/api/contact/).
-     Laisser vide ("") pour désactiver le formulaire et n'afficher
-     que le téléphone. */
+  /* Endpoint qui reçoit le formulaire « Écrire au centre » (…/api/contact/).
+     Laisser vide ("") pour masquer le formulaire et n'afficher que le téléphone. */
   CONTACT_API_URL: "https://www.arsalanesoutien.com/api/contact/",
 
   /* Téléphones — affichage en format local, lien en format international. */
@@ -23,8 +22,11 @@ window.ARSALANE_CONFIG = {
   INSTAGRAM_URL: "https://www.instagram.com/arsalanesoutien_/",
   FACEBOOK_URL: "https://www.facebook.com/arsalanesoutien",
 
-  /* Fiche Google Maps du centre (bouton « Ouvrir dans Google Maps » /
-     « Itinéraire »). La carte intégrée, elle, utilise les coordonnées
-     directement dans l'iframe de index.html. */
+  /* Fiche Google Maps (boutons « Itinéraire » / « Ouvrir dans Google Maps »).
+     La carte intégrée utilise, elle, les coordonnées directement dans l'iframe. */
   MAPS_URL: "https://www.google.com/maps/place/Arsalane+Soutien/@33.2303918,-8.5191615,21z/data=!4m6!3m5!1s0xda91dcc9c5b833b:0x93087b9d064d4077!8m2!3d33.2304375!4d-8.5190625!16s%2Fg%2F11lnfh4czw",
+
+  /* Crédit développeur (pied de page). DEV_URL vide → simple texte. */
+  DEV_NAME: "Yasser Mansour",
+  DEV_URL: "",
 };
