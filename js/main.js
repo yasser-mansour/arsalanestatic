@@ -1,43 +1,59 @@
 /* =========================================================================
    Arsalane Soutien — site public : interactions (JavaScript vanilla)
-   Amélioration progressive : le site fonctionne entièrement sans JavaScript,
-   ceci ne fait que fluidifier l'usage.
+   Amélioration progressive : le site fonctionne entièrement sans JavaScript.
    ========================================================================= */
 (function () {
   "use strict";
 
   var CFG = window.ARSALANE_CONFIG || {};
 
-  /* ---- Liens pilotés par la configuration ---------------------------- */
-  document.querySelectorAll("[data-admin-link]").forEach(function (a) {
-    if (CFG.ADMIN_URL) {
-      a.href = CFG.ADMIN_URL;
-      a.target = "_blank";
-      a.rel = "noopener";
-    }
-  });
-  document.querySelectorAll("[data-phone-link]").forEach(function (a) {
-    a.href = "tel:" + (CFG.PHONE_TEL || "");
-    if (a.hasAttribute("data-phone-text") && CFG.PHONE_DISPLAY) {
-      a.textContent = CFG.PHONE_DISPLAY;
-    }
+  /* ---- Liens pilotés par la configuration -------------------------- */
+  function each(sel, fn) {
+    Array.prototype.forEach.call(document.querySelectorAll(sel), fn);
+  }
+
+  each("[data-admin-link]", function (a) {
+    if (!CFG.ADMIN_URL) return;
+    a.href = CFG.ADMIN_URL;
+    a.target = "_blank";
+    a.rel = "noopener";
   });
 
-  /* ---- Année du pied de page --------------------------------------- */
+  each("[data-phone]", function (a) {
+    var n = a.getAttribute("data-phone") === "2" ? "2" : "1";
+    var tel = CFG["PHONE_" + n + "_TEL"] || "";
+    var disp = CFG["PHONE_" + n + "_DISPLAY"] || "";
+    a.href = "tel:" + tel;
+    if (a.hasAttribute("data-phone-text") && disp) a.textContent = disp;
+  });
+
+  each("[data-social]", function (a) {
+    var url = a.getAttribute("data-social") === "facebook" ? CFG.FACEBOOK_URL : CFG.INSTAGRAM_URL;
+    if (!url) return;
+    a.href = url;
+    a.target = "_blank";
+    a.rel = "noopener";
+  });
+
+  each("[data-maps]", function (a) {
+    if (!CFG.MAPS_URL) return;
+    a.href = CFG.MAPS_URL;
+  });
+
+  /* ---- Année du pied de page -------------------------------------- */
   var yearEl = document.getElementById("year");
   if (yearEl) yearEl.textContent = String(new Date().getFullYear());
 
-  /* ---- En-tête : ombre au défilement ------------------------------ */
-  var header = document.querySelector(".site-header");
+  /* ---- En-tête : état au défilement ------------------------------ */
+  var header = document.querySelector(".masthead");
   var onScroll = function () {
-    if (!header) return;
-    header.classList.toggle("is-scrolled", window.scrollY > 8);
+    if (header) header.classList.toggle("is-scrolled", window.scrollY > 4);
   };
   onScroll();
   window.addEventListener("scroll", onScroll, { passive: true });
 
-  /* ---- Menu mobile ---------------------------------------------- */
-  var toggle = document.querySelector(".nav-toggle");
+  /* ---- Menu mobile --------------------------------------------- */
+  var toggle = document.querySelector(".burger");
   var nav = document.getElementById("menu");
   function closeMenu() {
     if (!nav) return;
@@ -48,6 +64,7 @@
     toggle.addEventListener("click", function () {
       var open = nav.classList.toggle("is-open");
       toggle.setAttribute("aria-expanded", open ? "true" : "false");
+      toggle.setAttribute("aria-label", open ? "Fermer le menu" : "Ouvrir le menu");
     });
     nav.addEventListener("click", function (e) {
       if (e.target.tagName === "A") closeMenu();
@@ -56,29 +73,18 @@
       if (e.key === "Escape") closeMenu();
     });
     window.addEventListener("resize", function () {
-      if (window.innerWidth > 940) closeMenu();
+      if (window.innerWidth > 899) closeMenu();
     });
   }
 
-  /* ---- Apparition au défilement -------------------------------- */
-  var revealables = document.querySelectorAll(".reveal");
-  var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  if (reduceMotion || !("IntersectionObserver" in window)) {
-    revealables.forEach(function (el) { el.classList.add("is-in"); });
-  } else {
-    var io = new IntersectionObserver(function (entries) {
-      entries.forEach(function (entry) {
-        if (entry.isIntersecting) {
-          entry.target.classList.add("is-in");
-          io.unobserve(entry.target);
-        }
-      });
-    }, { rootMargin: "0px 0px -8% 0px", threshold: 0.06 });
-    revealables.forEach(function (el) { io.observe(el); });
-  }
-
   /* ---- Navigation active selon la section visible ------------- */
-  var navLinks = Array.prototype.slice.call(document.querySelectorAll(".site-nav a"));
+  var navLinks = Array.prototype.filter.call(
+    document.querySelectorAll(".mainnav > a"),
+    function (a) {
+      var h = a.getAttribute("href") || "";
+      return h.charAt(0) === "#" && h.length > 1;
+    }
+  );
   var sections = navLinks
     .map(function (a) { return document.querySelector(a.getAttribute("href")); })
     .filter(Boolean);
@@ -98,21 +104,22 @@
   /* ---- Formulaire de contact --------------------------------- */
   var form = document.getElementById("contact-form");
   var statusEl = document.getElementById("cf-status");
+  var PHONE_DISPLAY = CFG.PHONE_1_DISPLAY || "";
+  var PHONE_TEL = CFG.PHONE_1_TEL || "";
 
   function setStatus(msg, kind) {
     if (!statusEl) return;
     statusEl.textContent = msg;
-    statusEl.className = "contact-form__status" + (kind ? " is-" + kind : "");
+    statusEl.className = "cform__status" + (kind ? " is-" + kind : "");
   }
 
   if (form) {
     if (!CFG.CONTACT_API_URL) {
-      // Endpoint non configuré : on remplace le formulaire par un appel à l'action.
       form.innerHTML =
-        '<p>Le formulaire en ligne n\'est pas encore activé. ' +
-        'Contactez le centre par téléphone :</p>' +
-        '<a class="btn btn--primary btn--block" data-phone-link href="tel:' +
-        (CFG.PHONE_TEL || "") + '">' + (CFG.PHONE_DISPLAY || "Appeler le centre") + "</a>";
+        '<p class="mono note">Le message en ligne n\'est pas encore activé — ' +
+        'appelez le centre :</p>' +
+        '<a class="btn" href="tel:' + PHONE_TEL + '">' +
+        (PHONE_DISPLAY || "Appeler le centre") + "</a>";
       return;
     }
 
@@ -120,7 +127,6 @@
       e.preventDefault();
       if (form.dataset.sending === "1") return;
 
-      // Pot de miel : si rempli, on simule un succès sans rien envoyer.
       if (form.website && form.website.value) {
         setStatus("Merci, votre message a bien été envoyé.", "ok");
         form.reset();
@@ -170,15 +176,14 @@
           } else {
             setStatus(
               (res.body && res.body.error) ||
-              "L'envoi a échoué. Vous pouvez nous appeler au " + (CFG.PHONE_DISPLAY || "") + ".",
+              "L'envoi a échoué. Vous pouvez nous appeler au " + PHONE_DISPLAY + ".",
               "error"
             );
           }
         })
         .catch(function () {
           setStatus(
-            "Impossible d'envoyer le message pour le moment. Appelez-nous au " +
-            (CFG.PHONE_DISPLAY || "") + ".",
+            "Impossible d'envoyer le message pour le moment. Appelez-nous au " + PHONE_DISPLAY + ".",
             "error"
           );
         })
@@ -188,9 +193,4 @@
         });
     });
   }
-
-  // Ré-applique la config sur les liens injectés dynamiquement (fallback formulaire).
-  document.querySelectorAll("[data-phone-link]").forEach(function (a) {
-    a.href = "tel:" + (CFG.PHONE_TEL || "");
-  });
 })();

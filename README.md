@@ -6,6 +6,11 @@ HTML + CSS + JavaScript vanilla. Aucune dépendance, aucun build, aucun framewor
 Il est **séparé** de l'application de gestion Django (`../arsalanesoutien/`) : ce dépôt
 ne contient que la vitrine marketing publique.
 
+Direction éditoriale : une mise en page à la « cahier d'école » — marge à filet,
+index à deux chiffres par section (01, 02…), photographie du centre en pleine largeur.
+Titrage en **Fraunces** (serif), texte en **IBM Plex Sans**, repères/légendes en
+**IBM Plex Mono**.
+
 ---
 
 ## Aperçu local
@@ -20,7 +25,7 @@ puis ouvrir <http://localhost:8000>.
 
 (Ou n'importe quel serveur statique : `npx serve`, extension « Live Server », etc.
 Ouvrir `index.html` directement en `file://` fonctionne aussi, mais le formulaire de
-contact et la police web se comportent mieux via un serveur.)
+contact et les polices web se comportent mieux via un serveur.)
 
 ---
 
@@ -28,32 +33,50 @@ contact et la police web se comportent mieux via un serveur.)
 
 ```
 arsalanestatic/
-├── index.html          Page unique (toutes les sections)
+├── index.html          Page unique : couverture, 01 Le centre, 02 Niveaux,
+│                        03 Le cadre, 04 L'équipe, 05 Contact, 06 Nous trouver
 ├── css/
 │   └── styles.css       Tout le style (variables de thème en haut du fichier)
 ├── js/
-│   ├── config.js        ⚙️  Liens & numéros à modifier (voir plus bas)
-│   └── main.js          Menu mobile, apparitions au défilement, formulaire
+│   ├── config.js        ⚙️  Liens, numéros et comptes à modifier (voir plus bas)
+│   └── main.js          Menu mobile, en-tête au défilement, formulaire
 ├── images/
-│   ├── logo.png         Logo officiel (source)
-│   ├── salle_etude.jpeg, salle2.jpeg, salle_reunion.jpeg
-│   ├── reception.jpeg   ⚠️  NON utilisée — visible dessus le nom d'un autre centre ; à supprimer
-│   └── opt/             Versions optimisées (WebP + JPEG redimensionné) utilisées par le site
-│                        mark.png / mark.webp = pastille du logo (fond transparent)
+│   ├── logo.png          Logo officiel complet (source)
+│   ├── staff.png          Affiche « Staff pédagogique 2026-2027 » (source, fournie par le centre)
+│   ├── salle_etude.jpeg, salle2.jpeg, salle_reunion.jpeg   Photos du centre (sources)
+│   └── opt/               Versions optimisées (WebP + JPEG/PNG) utilisées par le site :
+│                           mark.png/.webp        pastille du logo (fond transparent, dans l'en-tête et le pied de page)
+│                           logo.webp             logo complet (référence — non affiché tel quel sur le site)
+│                           salle_etude.*          couverture (portrait, plein cadre à droite)
+│                           salle_reunion_wide.*    section « Le cadre », bandeau plein écran
+│                           salle2.*                section « Le cadre », photo décalée
+│                           staff.*                 section « L'équipe », affiche du centre
 ├── favicon.svg
 ├── robots.txt / sitemap.xml
 └── README.md
 ```
 
+`reception.jpeg` a été retirée : elle montrait l'enseigne d'un autre centre
+(« Good-Luck Private Center ») et n'était déjà plus utilisée.
+
 ### Régénérer les images optimisées
 
 Les photos sources sont dans `images/`. Les versions servies sont dans `images/opt/`
-(WebP haute qualité + repli JPEG). Pour les recréer après avoir remplacé une photo :
+(WebP + repli JPEG/PNG). Pour reproduire le bandeau large de « Le cadre » ou les
+autres dérivés après avoir remplacé une photo :
 
 ```bash
 cd images
-cwebp -q 82 -m 6 salle_etude.jpeg -o opt/salle_etude.webp   # idem pour les autres
-sips -Z 960 -s formatOptions 80 salle_etude.jpeg --out opt/salle_etude.jpg
+cwebp -q 80 -m 6 salle_etude.jpeg -o opt/salle_etude.webp
+sips -Z 1280 -s format jpeg -s formatOptions 82 salle_etude.jpeg --out opt/salle_etude.jpg
+
+# bandeau large (recadrage centré 960×560) pour la section « Le cadre »
+sips -c 560 960 salle_reunion.jpeg --out /tmp/wide.jpg
+cwebp -q 80 -m 6 /tmp/wide.jpg -o opt/salle_reunion_wide.webp
+sips -s format jpeg -s formatOptions 82 /tmp/wide.jpg --out opt/salle_reunion_wide.jpg
+
+# affiche de l'équipe (garder une résolution suffisante pour que les noms restent lisibles)
+cwebp -q 90 -m 6 staff.png -o opt/staff.webp
 ```
 
 ---
@@ -62,13 +85,12 @@ sips -Z 960 -s formatOptions 80 salle_etude.jpeg --out opt/salle_etude.jpg
 
 | Quoi | Où |
 | --- | --- |
-| **Lien « Espace administration »** | `js/config.js` → `ADMIN_URL` (un seul endroit) |
-| **Adresse de l'API du formulaire de contact** | `js/config.js` → `CONTACT_API_URL` |
-| **Numéro de téléphone** (affichage + liens `tel:`) | `js/config.js` → `PHONE_DISPLAY` / `PHONE_TEL` |
+| **Espace administration**, téléphones, Instagram, Facebook, lien Google Maps | `js/config.js` — un seul fichier pour tous les liens et numéros |
 | **Adresse postale** | `index.html` (sections *Contact*, *Nous trouver*, pied de page) + le bloc JSON-LD dans `<head>` |
-| **Niveaux / matières / offre** | `index.html`, section `#nos-cours` — blocs `<article class="offer__item">` balisés `<!-- ÉDITABLE -->` |
+| **Niveaux / matières** | `index.html`, section `#niveaux` — liste `<ol class="levels">` |
+| **Équipe** | remplacer `images/staff.png` (et régénérer `opt/staff.webp`) ; ne pas modifier les textes de la section pour ne pas inventer de contenu |
 | **Couleurs / typographie** | `css/styles.css`, bloc `:root` en haut |
-| **Domaine canonique / Open Graph** | `index.html` `<head>` (`<link rel="canonical">`, balises `og:`) |
+| **Domaine canonique / Open Graph** | `index.html` `<head>` |
 
 Aucun contenu n'est géré par un CMS : tout est du HTML éditable à la main.
 
@@ -82,8 +104,12 @@ Section `#nous-trouver`. La carte est un `<iframe>` Google Maps **sans clé API*
 https://www.google.com/maps?q=33.2304375,-8.5190625&hl=fr&z=17&output=embed
 ```
 
-Le bouton **« Ouvrir dans Google Maps »** pointe vers la fiche du lieu fournie par le centre.
-Coordonnées : `33.2304375, -8.5190625`.
+Le bouton **« Ouvrir dans Google Maps »** (contact + section carte) et **« Itinéraire »**
+utilisent `MAPS_URL` dans `js/config.js`. Coordonnées : `33.2304375, -8.5190625`.
+
+La carte est chargée en `loading="lazy"` : elle n'apparaît qu'en s'approchant de la
+section en scrollant (normal si elle semble vide immédiatement après le chargement
+de la page).
 
 ---
 
