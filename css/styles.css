@@ -170,8 +170,9 @@ h1 em,h2 em{font-family:var(--serif);font-weight:500}
 .lightbox__close{right:25px;top:17px;font-size:38px}
 .lightbox__prev{left:24px}
 .lightbox__next{right:24px}
-.reveal{opacity:0;transform:translateY(22px);transition:opacity .65s ease,transform .65s ease}
-.reveal.is-visible{opacity:1;transform:none}
+.reveal{opacity:1;transform:none}
+.js-ready .reveal{opacity:0;transform:translateY(22px);transition:opacity .65s ease,transform .65s ease}
+.js-ready .reveal.is-visible{opacity:1;transform:none}
 .reveal--delay{transition-delay:.12s}
 @media (max-width:1000px){
   :root{--container:min(100% - 36px,760px)}
@@ -255,5 +256,5 @@ h1 em,h2 em{font-family:var(--serif);font-weight:500}
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
   *,*:before,*:after{transition:none!important;animation:none!important}
-  .reveal{opacity:1;transform:none}
+  .js-ready .reveal{opacity:1;transform:none}
 }
