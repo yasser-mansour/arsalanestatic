@@ -66,16 +66,19 @@
   window.addEventListener("scroll", onScroll, { passive: true });
 
   /* ---- Menu mobile --------------------------------------------- */
-  var btn = document.querySelector(".menu-btn");
-  var nav = document.getElementById("nav");
+  var btn = document.querySelector(".menu-button");
+  var nav = document.getElementById("main-nav");
   function closeMenu() {
     if (!nav) return;
-    nav.classList.remove("is-open");
-    if (btn) btn.setAttribute("aria-expanded", "false");
+    nav.classList.remove("mobile-open");
+    if (btn) {
+      btn.setAttribute("aria-expanded", "false");
+      btn.setAttribute("aria-label", "Ouvrir le menu");
+    }
   }
   if (btn && nav) {
     btn.addEventListener("click", function () {
-      var open = nav.classList.toggle("is-open");
+      var open = nav.classList.toggle("mobile-open");
       btn.setAttribute("aria-expanded", open ? "true" : "false");
       btn.setAttribute("aria-label", open ? "Fermer le menu" : "Ouvrir le menu");
     });
