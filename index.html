@@ -71,11 +71,13 @@
     <nav class="nav" id="nav" aria-label="Navigation principale">
       <a href="#le-centre">Le centre</a>
       <a href="#niveaux">Niveaux</a>
+      <a href="#emploi-du-temps">Emploi du temps</a>
       <a href="#equipe">L'équipe</a>
       <a href="#contact">Contact</a>
       <span class="nav__div" aria-hidden="true"></span>
       <a class="nav__admin" data-admin-link href="#">Espace administration <span class="up" aria-hidden="true">↗</span></a>
       <a class="nav__tel" data-phone="1" data-phone-text href="#">07 08 30 04 84</a>
+      <a class="nav__tel" data-phone="2" data-phone-text href="#">07 08 60 24 00</a>
     </nav>
 
     <button class="menu-btn" aria-expanded="false" aria-controls="nav" aria-label="Ouvrir le menu">
@@ -182,9 +184,81 @@
         </ol>
 
         <p class="matieres">
-          Matières — mathématiques, physique-chimie, SVT, français,
+          Matières — mathématiques, physique-chimie, SVT, français, arabe,
           histoire-géographie, économie.
         </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ 03 · EMPLOI DU TEMPS ═══════════ -->
+  <section class="band band--surface" id="emploi-du-temps" aria-labelledby="s-edt">
+    <div class="frame slab">
+      <div class="rail"><span class="rail__no">03</span><h2 class="rail__label" id="s-edt">Emploi du temps</h2></div>
+      <div class="slab__main">
+        <p class="lead lead--tight">Les emplois du temps actuels, par niveau.</p>
+        <p class="matieres edt__note">Les groupes et les horaires sont ajustés à chaque rentrée — les confirmer par téléphone.</p>
+
+        <!-- ÉDITABLE — un <li>/<button> par emploi du temps ; la visionneuse (js/main.js)
+             lit directement l'image et le libellé de chaque bouton, dans l'ordre du DOM. -->
+        <ul class="edt">
+          <li><button type="button" class="edt__item">
+            <picture><source srcset="images/opt/edt_primaire_ce5.webp" type="image/webp">
+              <img src="images/opt/edt_primaire_ce5.jpg" loading="lazy" width="957" height="1100"
+                   alt="Emploi du temps Arsalane Soutien — Primaire, 5e année (CE5).">
+            </picture>
+            <span class="edt__cap">Primaire — 5<sup>e</sup> année</span>
+          </button></li>
+          <li><button type="button" class="edt__item">
+            <picture><source srcset="images/opt/edt_primaire_ce6.webp" type="image/webp">
+              <img src="images/opt/edt_primaire_ce6.jpg" loading="lazy" width="957" height="1100"
+                   alt="Emploi du temps Arsalane Soutien — Primaire, 6e année (CE6).">
+            </picture>
+            <span class="edt__cap">Primaire — 6<sup>e</sup> année</span>
+          </button></li>
+          <li><button type="button" class="edt__item">
+            <picture><source srcset="images/opt/edt_college_1ac.webp" type="image/webp">
+              <img src="images/opt/edt_college_1ac.jpg" loading="lazy" width="880" height="1100"
+                   alt="Emploi du temps Arsalane Soutien — Collège, 1re année (1AC).">
+            </picture>
+            <span class="edt__cap">Collège — 1<sup>re</sup> année</span>
+          </button></li>
+          <li><button type="button" class="edt__item">
+            <picture><source srcset="images/opt/edt_college_2ac.webp" type="image/webp">
+              <img src="images/opt/edt_college_2ac.jpg" loading="lazy" width="880" height="1100"
+                   alt="Emploi du temps Arsalane Soutien — Collège, 2e année (2AC).">
+            </picture>
+            <span class="edt__cap">Collège — 2<sup>e</sup> année</span>
+          </button></li>
+          <li><button type="button" class="edt__item">
+            <picture><source srcset="images/opt/edt_college_3ac.webp" type="image/webp">
+              <img src="images/opt/edt_college_3ac.jpg" loading="lazy" width="880" height="1100"
+                   alt="Emploi du temps Arsalane Soutien — Collège, 3e année (3AC).">
+            </picture>
+            <span class="edt__cap">Collège — 3<sup>e</sup> année</span>
+          </button></li>
+          <li><button type="button" class="edt__item">
+            <picture><source srcset="images/opt/edt_lycee_tronc_commun.webp" type="image/webp">
+              <img src="images/opt/edt_lycee_tronc_commun.jpg" loading="lazy" width="880" height="1100"
+                   alt="Emploi du temps Arsalane Soutien — Lycée, tronc commun.">
+            </picture>
+            <span class="edt__cap">Lycée — Tronc commun</span>
+          </button></li>
+          <li><button type="button" class="edt__item">
+            <picture><source srcset="images/opt/edt_lycee_1bac.webp" type="image/webp">
+              <img src="images/opt/edt_lycee_1bac.jpg" loading="lazy" width="880" height="1100"
+                   alt="Emploi du temps Arsalane Soutien — Lycée, 1re année Bac, toutes filières.">
+            </picture>
+            <span class="edt__cap">Lycée — 1<sup>re</sup> Bac, toutes filières</span>
+          </button></li>
+          <li><button type="button" class="edt__item">
+            <picture><source srcset="images/opt/edt_lycee_2bac_pcsvt.webp" type="image/webp">
+              <img src="images/opt/edt_lycee_2bac_pcsvt.jpg" loading="lazy" width="880" height="1100"
+                   alt="Emploi du temps Arsalane Soutien — Lycée, 2e année Bac, filières PC et SVT.">
+            </picture>
+            <span class="edt__cap">Lycée — 2<sup>e</sup> Bac, PC / SVT</span>
+          </button></li>
+        </ul>
       </div>
     </div>
   </section>
@@ -199,10 +273,10 @@
     <figcaption>Arsalane Soutien — Hay Al Matar · El Jadida</figcaption>
   </figure>
 
-  <!-- ═══════════ 03 · L'APPROCHE ═══════════ -->
-  <section class="band band--surface" id="approche" aria-labelledby="s-approche">
+  <!-- ═══════════ 04 · L'APPROCHE ═══════════ -->
+  <section class="band" id="approche" aria-labelledby="s-approche">
     <div class="frame slab">
-      <div class="rail"><span class="rail__no">03</span><h2 class="rail__label" id="s-approche">L'approche</h2></div>
+      <div class="rail"><span class="rail__no">04</span><h2 class="rail__label" id="s-approche">L'approche</h2></div>
       <div class="slab__main">
         <p class="display">Un cadre pour avancer.</p>
         <ol class="points">
@@ -214,10 +288,10 @@
     </div>
   </section>
 
-  <!-- ═══════════ 04 · L'ÉQUIPE ═══════════ -->
+  <!-- ═══════════ 05 · L'ÉQUIPE ═══════════ -->
   <section class="band" id="equipe" aria-labelledby="s-equipe">
     <div class="frame slab">
-      <div class="rail"><span class="rail__no">04</span><h2 class="rail__label" id="s-equipe">L'équipe</h2></div>
+      <div class="rail"><span class="rail__no">05</span><h2 class="rail__label" id="s-equipe">L'équipe</h2></div>
       <div class="slab__main">
         <p class="display">Les personnes derrière Arsalane.</p>
         <p class="lead lead--tight">
@@ -236,12 +310,12 @@
     </figure>
   </section>
 
-  <!-- ═══════════ 05 · LE CADRE ═══════════ -->
+  <!-- ═══════════ 06 · LE CADRE ═══════════ -->
   <section class="band band--surface" id="le-cadre" aria-labelledby="s-cadre">
     <div class="frame slab">
-      <div class="rail"><span class="rail__no">05</span><h2 class="rail__label" id="s-cadre">Le cadre</h2></div>
+      <div class="rail"><span class="rail__no">06</span><h2 class="rail__label" id="s-cadre">Le cadre</h2></div>
       <div class="slab__main">
-        <p class="display">Des salles claires,<br>un lieu qui appelle au travail.</p>
+        <p class="display">Des salles claires,<br>du calme, un vrai cadre de travail.</p>
       </div>
     </div>
 
@@ -292,10 +366,10 @@
     </div>
   </section>
 
-  <!-- ═══════════ 06 · CONTACT ═══════════ -->
+  <!-- ═══════════ 07 · CONTACT ═══════════ -->
   <section class="band contact" id="contact" aria-labelledby="s-contact">
     <div class="frame slab">
-      <div class="rail"><span class="rail__no">06</span><h2 class="rail__label" id="s-contact">Contact</h2></div>
+      <div class="rail"><span class="rail__no">07</span><h2 class="rail__label" id="s-contact">Contact</h2></div>
       <div class="slab__main contact__grid">
         <div class="contact__where">
           <p class="contact__big display">Nous<br>trouver.</p>
@@ -308,12 +382,10 @@
             <a data-phone="1" data-phone-text href="#">07 08 30 04 84</a>
             <a data-phone="2" data-phone-text href="#">07 08 60 24 00</a>
           </p>
-          <p class="contact__soc">
-            <a data-social="instagram" href="#" target="_blank" rel="noopener">@arsalanesoutien_</a>
-            <a data-social="facebook" href="#" target="_blank" rel="noopener">Arsalane Soutien</a>
-          </p>
           <p class="contact__acts">
             <a class="arrow-link" data-maps href="#" target="_blank" rel="noopener">Itinéraire <span class="ar" aria-hidden="true">→</span></a>
+            <a class="arrow-link" data-social="instagram" href="#" target="_blank" rel="noopener">Instagram <span class="up" aria-hidden="true">↗</span></a>
+            <a class="arrow-link" data-social="facebook" href="#" target="_blank" rel="noopener">Facebook <span class="up" aria-hidden="true">↗</span></a>
           </p>
         </div>
 
@@ -374,6 +446,7 @@
       <h2>Navigation</h2>
       <a href="#le-centre">Le centre</a>
       <a href="#niveaux">Niveaux</a>
+      <a href="#emploi-du-temps">Emploi du temps</a>
       <a href="#approche">L'approche</a>
       <a href="#equipe">L'équipe</a>
       <a href="#le-cadre">Le cadre</a>
@@ -381,7 +454,7 @@
     </nav>
 
     <div class="foot__col">
-      <h2>Contact</h2>
+      <h2>Coordonnées</h2>
       <a data-phone="1" data-phone-text href="#">07 08 30 04 84</a>
       <a data-phone="2" data-phone-text href="#">07 08 60 24 00</a>
       <p class="foot__addr">Hay Al Matar, en face de<br>l'école Al Balsam<br>El Jadida 24000</p>
@@ -401,6 +474,23 @@
     <p>Site développé par <a data-dev-link href="#" class="foot__dev">Yasser Mansour</a></p>
   </div>
 </footer>
+
+<!-- ═══════════ VISIONNEUSE EMPLOI DU TEMPS ═══════════ -->
+<div class="lightbox" id="edt-lightbox" hidden role="dialog" aria-modal="true" aria-label="Emploi du temps agrandi">
+  <button type="button" class="lightbox__close" data-edt-close aria-label="Fermer">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg>
+  </button>
+  <button type="button" class="lightbox__nav lightbox__nav--prev" data-edt-prev aria-label="Emploi du temps précédent">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </button>
+  <button type="button" class="lightbox__nav lightbox__nav--next" data-edt-next aria-label="Emploi du temps suivant">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </button>
+  <figure class="lightbox__figure">
+    <img id="edt-lightbox-img" src="" alt="">
+    <figcaption><span id="edt-lightbox-cap"></span> <span class="lightbox__count" id="edt-lightbox-count"></span></figcaption>
+  </figure>
+</div>
 
 <script src="js/config.js"></script>
 <script src="js/main.js"></script>
