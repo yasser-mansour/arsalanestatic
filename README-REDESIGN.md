@@ -1,25 +1,57 @@
-# Arsalane Soutien — Frontend redesign
+# Arsalane Soutien — Human / Editorial Redesign
 
-This folder is a complete replacement for the public frontend.
+This is a complete replacement for the public static homepage.
 
-It intentionally assumes the existing repository assets remain in `images/opt/`:
-- logo.webp / mark.webp
-- salle_etude_wide.jpg
-- salle2.jpg
-- salle_reunion.jpg / salle_reunion_wide.jpg
-- staff.webp
-- the 8 edt_*.jpg files
+## Design direction
+
+The previous version was intentionally moved away from the visual language that is now strongly associated with AI website builders:
+
+- no purple/blue gradients
+- no glassmorphism
+- no floating rounded cards
+- no centered hero with two pill buttons
+- no repeated three-card feature grids
+- no stock icon library
+- no fake testimonials, counters or invented claims
+- no JavaScript-dependent hiding/revealing of the page
+
+Instead, the site uses:
+
+- an editorial, print-inspired composition
+- asymmetric layouts
+- large typographic hierarchy
+- thin rules and numbered sections
+- restrained red/ink/paper palette
+- real Arsalane imagery only after the brand proposition
+- schedules presented as an actual index/list rather than cards
+- varied section rhythms
+- deliberately imperfect visual tension and negative space
+
+## Important
+
+Keep the existing `images/` directory from the repository. The HTML references the optimized files already present there.
 
 Replace:
-- index.html
-- css/styles.css
-- js/main.js
-- js/config.js
 
-The redesign keeps only factual center information already present in the existing public site/repository. It does not add fabricated testimonials, statistics, teachers, claims or services.
+- `index.html`
+- `css/styles.css`
+- `js/main.js`
+- `js/config.js`
 
-The first screen deliberately does NOT lead with a room photo. It establishes the brand, the offer, supported levels and primary actions first. Real center photography appears later where it supports the story.
+The design does not depend on a JavaScript reveal animation. If JavaScript fails, the complete page remains visible.
 
+## Existing centre information used
 
-## Blank-page fix
-The first version used `.reveal { opacity: 0 }` by default. If JavaScript failed to execute, every section remained invisible. This version uses a safe progressive-enhancement pattern: content is visible by default, and JavaScript enables the reveal animation only when it is actually available. A timeout fallback also makes every reveal visible after 1.8 seconds.
+Only information already present in the Arsalane Soutien public repository was used:
+
+- El Jadida
+- Hay Al Matar, en face de l'école Al Balsam
+- 07 08 30 04 84
+- 07 08 60 24 00
+- Instagram / Facebook accounts already listed by the centre
+- levels from 5e primary through Bac
+- listed subjects
+- small groups, regular year-round work, parent follow-up and calm working environment
+- staff poster supplied by the centre
+- eight timetable images supplied by the centre
+- real centre photographs supplied by the centre
