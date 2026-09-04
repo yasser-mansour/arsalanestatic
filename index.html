@@ -116,41 +116,34 @@
         </div>
 
         <div class="schedule-table">
-          <button class="schedule-item" data-image="images/opt/edt_primaire_ce5.jpg" data-title="Primaire — 5e année">
+          <button class="schedule-item" data-image="images/opt/edt_primaire_ce5.webp" data-title="Primaire — 5e année">
             <span class="schedule-num">01</span><strong>Primaire</strong><span>5e année</span><b>↗</b>
           </button>
-          <button class="schedule-item" data-image="images/opt/edt_primaire_ce6.jpg" data-title="Primaire — 6e année">
+          <button class="schedule-item" data-image="images/opt/edt_primaire_ce6.webp" data-title="Primaire — 6e année">
             <span class="schedule-num">02</span><strong>Primaire</strong><span>6e année</span><b>↗</b>
           </button>
-          <button class="schedule-item" data-image="images/opt/edt_college_1ac.jpg" data-title="Collège — 1re année">
+          <button class="schedule-item" data-image="images/opt/edt_college_1ac.webp" data-title="Collège — 1re année">
             <span class="schedule-num">03</span><strong>Collège</strong><span>1re année</span><b>↗</b>
           </button>
-          <button class="schedule-item" data-image="images/opt/edt_college_2ac.jpg" data-title="Collège — 2e année">
+          <button class="schedule-item" data-image="images/opt/edt_college_2ac.webp" data-title="Collège — 2e année">
             <span class="schedule-num">04</span><strong>Collège</strong><span>2e année</span><b>↗</b>
           </button>
-          <button class="schedule-item" data-image="images/opt/edt_college_3ac.jpg" data-title="Collège — 3e année">
+          <button class="schedule-item" data-image="images/opt/edt_college_3ac.webp" data-title="Collège — 3e année">
             <span class="schedule-num">05</span><strong>Collège</strong><span>3e année</span><b>↗</b>
           </button>
-          <button class="schedule-item" data-image="images/opt/edt_lycee_tronc_commun.jpg" data-title="Lycée — Tronc commun">
+          <button class="schedule-item" data-image="images/opt/edt_lycee_tronc_commun.webp" data-title="Lycée — Tronc commun">
             <span class="schedule-num">06</span><strong>Lycée</strong><span>Tronc commun</span><b>↗</b>
           </button>
-          <button class="schedule-item" data-image="images/opt/edt_lycee_1bac.jpg" data-title="Lycée — 1re Bac">
+          <button class="schedule-item" data-image="images/opt/edt_lycee_1bac.webp" data-title="Lycée — 1re Bac">
             <span class="schedule-num">07</span><strong>Lycée</strong><span>1re Bac</span><b>↗</b>
           </button>
-          <button class="schedule-item" data-image="images/opt/edt_lycee_2bac_pcsvt.jpg" data-title="Lycée — 2e Bac PC / SVT">
+          <button class="schedule-item" data-image="images/opt/edt_lycee_2bac_pcsvt.webp" data-title="Lycée — 2e Bac PC / SVT">
             <span class="schedule-num">08</span><strong>Lycée</strong><span>2e Bac PC / SVT</span><b>↗</b>
           </button>
         </div>
       </div>
     </section>
 
-    <section class="photo-break" aria-label="Le centre Arsalane Soutien">
-      <div class="photo-break-label">UN ESPACE<br>POUR ÉTUDIER</div>
-      <picture>
-        <source srcset="images/opt/salle_reunion_wide.webp" type="image/webp">
-        <img src="images/opt/salle_reunion_wide.jpg" alt="Espace du centre Arsalane Soutien" loading="lazy">
-      </picture>
-    </section>
 
     <section class="approach section">
       <div class="section-index">04</div>
@@ -205,6 +198,9 @@
             <a href="tel:+212708300484">07 08 30 04 84</a>
             <a href="tel:+212708602400">07 08 60 24 00</a>
           </div>
+          <div class="map-embed">
+            <iframe src="https://www.google.com/maps?q=33.2304375,-8.5190625&amp;hl=fr&amp;z=16&amp;output=embed" title="Localisation d'Arsalane Soutien sur Google Maps" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+          </div>
           <a class="map-link" href="https://www.google.com/maps?q=33.2304375,-8.5190625" target="_blank" rel="noopener">Ouvrir dans Google Maps <span>↗</span></a>
         </div>
         <div class="contact-side">
@@ -229,11 +225,10 @@
     <div class="footer-bottom">
       <span>© <span id="year"></span> Arsalane Soutien</span>
       <span>Hay Al Matar · El Jadida</span>
-      <span>Site par Yasser Mansour</span>
     </div>
   </footer>
 
-  <div class="lightbox" id="lightbox" aria-hidden="true">
+  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-labelledby="lightbox-title" aria-hidden="true">
     <div class="lightbox-bar">
       <span id="lightbox-title"></span>
       <button id="lightbox-close" aria-label="Fermer">Fermer <b>×</b></button>

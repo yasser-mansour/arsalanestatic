@@ -205,71 +205,48 @@
   }
 
   /* ---- Emploi du temps : visionneuse (lightbox) ---------------- */
-  var edtButtons = Array.prototype.slice.call(document.querySelectorAll(".edt__item"));
-  var lightbox = document.getElementById("edt-lightbox");
+  var scheduleButtons = Array.prototype.slice.call(document.querySelectorAll(".schedule-item"));
+  var lightbox = document.getElementById("lightbox");
 
-  if (edtButtons.length && lightbox) {
-    var edtItems = edtButtons.map(function (btn) {
-      var img = btn.querySelector("img");
-      return { src: img.currentSrc || img.src, alt: img.getAttribute("alt"), cap: btn.querySelector(".edt__cap").textContent };
-    });
-    var lbImg = document.getElementById("edt-lightbox-img");
-    var lbCap = document.getElementById("edt-lightbox-cap");
-    var lbCount = document.getElementById("edt-lightbox-count");
-    var closeBtn = lightbox.querySelector("[data-edt-close]");
-    var prevBtn = lightbox.querySelector("[data-edt-prev]");
-    var nextBtn = lightbox.querySelector("[data-edt-next]");
-    var current = 0;
+  if (scheduleButtons.length && lightbox) {
+    var lightboxImg = document.getElementById("lightbox-img");
+    var lightboxTitle = document.getElementById("lightbox-title");
+    var closeBtn = document.getElementById("lightbox-close");
     var opener = null;
 
-    function render() {
-      var item = edtItems[current];
-      lbImg.src = item.src;
-      lbImg.alt = item.alt;
-      lbCap.textContent = item.cap;
-      lbCount.textContent = (current + 1) + " / " + edtItems.length;
-    }
-    function openAt(index) {
-      current = index;
-      opener = edtButtons[index];
-      render();
-      lightbox.hidden = false;
+    function openLightbox(button) {
+      opener = button;
+      lightboxImg.src = button.dataset.image;
+      lightboxImg.alt = button.dataset.title;
+      lightboxTitle.textContent = button.dataset.title;
+      lightbox.classList.add("open");
+      lightbox.setAttribute("aria-hidden", "false");
       document.body.style.overflow = "hidden";
-      document.addEventListener("keydown", onKeydown);
       closeBtn.focus();
     }
+
     function closeLightbox() {
-      lightbox.hidden = true;
+      lightbox.classList.remove("open");
+      lightbox.setAttribute("aria-hidden", "true");
       document.body.style.overflow = "";
-      document.removeEventListener("keydown", onKeydown);
       if (opener) opener.focus();
     }
-    function step(delta) {
-      current = (current + delta + edtItems.length) % edtItems.length;
-      render();
-    }
-    function onKeydown(e) {
-      if (e.key === "Escape") { closeLightbox(); }
-      else if (e.key === "ArrowLeft") { step(-1); }
-      else if (e.key === "ArrowRight") { step(1); }
-      else if (e.key === "Tab") {
-        // boucle du focus entre les trois contrôles de la visionneuse
-        var focusables = [prevBtn, nextBtn, closeBtn];
-        var idx = focusables.indexOf(document.activeElement);
-        e.preventDefault();
-        var next = e.shiftKey ? (idx <= 0 ? focusables.length - 1 : idx - 1) : (idx === focusables.length - 1 ? 0 : idx + 1);
-        focusables[next < 0 ? 0 : next].focus();
-      }
-    }
 
-    edtButtons.forEach(function (btn, i) {
-      btn.addEventListener("click", function () { openAt(i); });
+    scheduleButtons.forEach(function (button) {
+      button.setAttribute("aria-haspopup", "dialog");
+      button.addEventListener("click", function () { openLightbox(button); });
     });
+
     closeBtn.addEventListener("click", closeLightbox);
-    prevBtn.addEventListener("click", function () { step(-1); });
-    nextBtn.addEventListener("click", function () { step(1); });
-    lightbox.addEventListener("click", function (e) {
-      if (e.target === lightbox) closeLightbox();
+    lightbox.addEventListener("click", function (event) {
+      if (event.target === lightbox || event.target.classList.contains("lightbox-image")) {
+        closeLightbox();
+      }
+    });
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape" && lightbox.classList.contains("open")) {
+        closeLightbox();
+      }
     });
   }
 })();
