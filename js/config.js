@@ -9,12 +9,9 @@ window.ARSALANE_CONFIG = {
   facebook: "https://www.facebook.com/arsalanesoutien",
   maps: "https://www.google.com/maps?q=33.2304375,-8.5190625",
 
-  /* Inscription en ligne — API publique de la plateforme de gestion Django.
-     Ces deux endpoints n'existent pas encore côté gestion au moment où ce
-     fichier est écrit ; le formulaire fonctionne déjà (niveaux/filières
-     réels du site en repli) et s'activera tout seul dès que l'URL de
-     soumission répondra. Mettre à jour ces deux lignes si le chemin final
-     retenu côté Django diffère. */
-  registrationOptionsUrl: "https://www.arsalanesoutien.com/api/public/registration-options/",
-  registrationApiUrl: "https://www.arsalanesoutien.com/api/public/online-registration/"
+  /* Inscription en ligne — API publique de la plateforme de gestion Django,
+     servie depuis le sous-domaine caisse.arsalanesoutien.com (PAS ce site
+     statique lui-même : il n'y a pas de backend ici). */
+  registrationOptionsUrl: "https://caisse.arsalanesoutien.com/api/public/registration-options/",
+  registrationApiUrl: "https://caisse.arsalanesoutien.com/api/public/online-registrations/"
 };

@@ -362,7 +362,9 @@
   /* ---- Niveaux / filières ------------------------------------------ */
   function findLevel(id) {
     for (var i = 0; i < levels.length; i++) {
-      if (levels[i].id === id) return levels[i];
+      // Comparaison en chaîne : un <select>.value est toujours une chaîne,
+      // même quand l'id vient de l'API sous forme de nombre (level_id Django).
+      if (String(levels[i].id) === String(id)) return levels[i];
     }
     return null;
   }
@@ -487,20 +489,6 @@
     statusEl.className = "reg-status" + (kind ? " is-" + kind : "");
   }
 
-  function applyServerErrors(body) {
-    if (!body || !body.errors) return;
-    var map = {
-      student_full_name: nameInput,
-      level_id: levelSelect,
-      track_id: trackSelect,
-      student_phone: studentPhoneInput,
-      parent_phone: parentPhoneInput
-    };
-    for (var key in body.errors) {
-      if (map[key]) setFieldError(map[key], body.errors[key]);
-    }
-  }
-
   function showSuccess(message, reference) {
     var html =
       '<div class="reg-success">' +
@@ -537,18 +525,20 @@
     var track = null;
     if (!trackField.hidden && level && level.tracks) {
       for (var i = 0; i < level.tracks.length; i++) {
-        if (level.tracks[i].id === trackSelect.value) track = level.tracks[i];
+        if (String(level.tracks[i].id) === String(trackSelect.value)) track = level.tracks[i];
       }
     }
 
+    // Un niveau avec filières n'est pas soumissible tel quel (son "id" ne sert
+    // qu'à l'affichage du <select> côté site) : le level_id réel à envoyer à
+    // Django est celui de la filière choisie. Un niveau sans filière soumet
+    // directement son propre id.
     var payload = {
       student_full_name: nameInput.value.trim(),
-      level_id: levelSelect.value,
-      level_label: level ? level.label : levelSelect.options[levelSelect.selectedIndex].textContent,
-      track_id: track ? track.id : null,
-      track_label: track ? track.label : null,
+      level_id: track ? track.id : levelSelect.value,
       student_phone: normalizePhone(studentPhoneInput.value.trim()),
-      parent_phone: parentPhoneInput.value.trim() ? normalizePhone(parentPhoneInput.value.trim()) : null
+      parent_phone: parentPhoneInput.value.trim() ? normalizePhone(parentPhoneInput.value.trim()) : null,
+      website: form.website ? form.website.value : ""
     };
 
     form.dataset.sending = "1";
@@ -568,15 +558,18 @@
         });
       })
       .then(function (res) {
+        // Django (core.views_public) renvoie {"error": "…"} pour toute erreur
+        // — même clé pour /api/contact/ et /api/public/online-registrations/.
         if (res.ok && res.body && res.body.success !== false) {
           showSuccess(res.body.message, res.body.reference);
         } else if (res.status === 409) {
-          setStatus((res.body && res.body.message) || "Une demande récente existe déjà avec ces informations.", "error");
+          setStatus((res.body && res.body.error) || "Une demande récente existe déjà avec ces informations.", "error");
         } else if (res.status === 422 || res.status === 400) {
-          applyServerErrors(res.body);
-          setStatus((res.body && res.body.message) || "Merci de vérifier les informations saisies.", "error");
+          setStatus((res.body && res.body.error) || "Merci de vérifier les informations saisies.", "error");
+        } else if (res.status === 503) {
+          setStatus((res.body && res.body.error) || "Le service est momentanément indisponible. Veuillez réessayer dans quelques instants.", "error");
         } else {
-          setStatus("Nous n'avons pas pu envoyer votre demande pour le moment. Vérifiez votre connexion et réessayez.", "error");
+          setStatus("Une erreur est survenue. Veuillez réessayer.", "error");
         }
       })
       .catch(function () {
