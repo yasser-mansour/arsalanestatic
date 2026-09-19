@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Arsalane Soutien — Soutien scolaire à El Jadida</title>
-  <meta name="description" content="Arsalane Soutien à El Jadida — accompagnement scolaire du primaire au Bac, avec cours par matière, suivi et emplois du temps.">
+  <meta name="description" content="Arsalane Soutien à El Jadida — accompagnement scolaire du primaire au Bac, avec cours par matière, suivi, emplois du temps et inscription en ligne.">
   <link rel="icon" href="favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -26,6 +26,7 @@
         <a href="#horaires">Horaires</a>
         <a href="#cadre">Le cadre</a>
         <a href="#contact">Contact</a>
+        <button type="button" class="nav-cta" data-open-registration>S'inscrire</button>
       </nav>
       <a class="header-phone" href="tel:+212708300484"><span>07 08 30 04 84</span><i>↗</i></a>
       <button class="menu-button" type="button" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="main-nav">
@@ -43,7 +44,8 @@
         <div class="hero-bottom">
           <p>Un centre de soutien scolaire à El Jadida pour accompagner les élèves de la 5e année primaire au Bac.</p>
           <div class="hero-actions">
-            <a class="link-arrow dark" href="#niveaux">Voir les niveaux <b>↘</b></a>
+            <button type="button" class="link-arrow dark" data-open-registration>S'inscrire en ligne <b>↗</b></button>
+            <a class="link-arrow" href="#niveaux">Voir les niveaux <b>↘</b></a>
             <a class="link-arrow" href="#contact">Nous trouver <b>↘</b></a>
           </div>
         </div>
@@ -236,7 +238,69 @@
     <div class="lightbox-image"><img id="lightbox-img" src="" alt=""></div>
   </div>
 
-  <script src="js/config.js?v=20260904"></script>
-  <script src="js/main.js?v=20260904-2"></script>
+  <div class="reg-modal" id="registration-modal" aria-hidden="true">
+    <div class="reg-modal__scrim" data-reg-close></div>
+    <div class="reg-modal__panel" role="dialog" aria-modal="true" aria-labelledby="reg-title">
+      <button type="button" class="reg-modal__close" id="reg-close" aria-label="Fermer">Fermer <b>×</b></button>
+
+      <div class="reg-modal__body" id="reg-body">
+        <p class="eyebrow">Demande d'inscription</p>
+        <h3 id="reg-title">Rejoindre Arsalane Soutien</h3>
+        <p class="reg-modal__intro">Remplissez ces quelques informations et notre équipe vous contactera pour finaliser l'inscription.</p>
+
+        <form id="registration-form" novalidate>
+          <div class="reg-hp" aria-hidden="true">
+            <label>Ne rien saisir ici
+              <input type="text" name="website" tabindex="-1" autocomplete="off">
+            </label>
+          </div>
+
+          <div class="reg-field">
+            <label for="reg-name">Nom complet de l'élève</label>
+            <input type="text" id="reg-name" name="student_full_name" autocomplete="name" placeholder="Ex. Yassine El Mansouri" required>
+            <p class="reg-error" data-error-for="reg-name"></p>
+          </div>
+
+          <div class="reg-field-row">
+            <div class="reg-field">
+              <label for="reg-level">Niveau</label>
+              <select id="reg-level" name="level" required>
+                <option value="" disabled selected>Chargement des niveaux…</option>
+              </select>
+              <p class="reg-error" data-error-for="reg-level"></p>
+            </div>
+            <div class="reg-field" id="reg-track-field" hidden>
+              <label for="reg-track">Filière</label>
+              <select id="reg-track" name="track">
+                <option value="">—</option>
+              </select>
+              <p class="reg-error" data-error-for="reg-track"></p>
+            </div>
+          </div>
+
+          <div class="reg-field-row">
+            <div class="reg-field">
+              <label for="reg-student-phone">Téléphone de l'élève</label>
+              <input type="tel" id="reg-student-phone" name="student_phone" autocomplete="tel" inputmode="tel" placeholder="06 12 34 56 78" required>
+              <p class="reg-error" data-error-for="reg-student-phone"></p>
+            </div>
+            <div class="reg-field">
+              <label for="reg-parent-phone">Téléphone du parent <span>— optionnel</span></label>
+              <input type="tel" id="reg-parent-phone" name="parent_phone" autocomplete="tel" inputmode="tel" placeholder="06 12 34 56 78">
+              <p class="reg-error" data-error-for="reg-parent-phone"></p>
+            </div>
+          </div>
+
+          <p class="reg-privacy">Ces informations seront utilisées uniquement pour traiter votre demande d'inscription et vous recontacter.</p>
+
+          <button type="submit" class="reg-submit" id="reg-submit">Envoyer ma demande</button>
+          <p class="reg-status" id="reg-status" role="status" aria-live="polite"></p>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/config.js?v=20260919"></script>
+  <script src="js/main.js?v=20260919"></script>
 </body>
 </html>

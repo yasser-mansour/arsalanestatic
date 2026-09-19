@@ -83,7 +83,7 @@
       btn.setAttribute("aria-label", open ? "Fermer le menu" : "Ouvrir le menu");
     });
     nav.addEventListener("click", function (e) {
-      if (e.target.closest("a")) closeMenu();
+      if (e.target.closest("a, button")) closeMenu();
     });
     document.addEventListener("keydown", function (e) {
       if (e.key === "Escape") closeMenu();
@@ -252,4 +252,342 @@
       }
     });
   }
+})();
+
+/* =========================================================================
+   Inscription en ligne — modale, niveaux/filières, envoi de la demande.
+   La demande d'inscription n'est PAS une inscription confirmée : le centre
+   recontacte le visiteur ensuite. Voir js/config.js pour les deux URL
+   (registrationOptionsUrl / registrationApiUrl) côté plateforme de gestion.
+   ========================================================================= */
+(function () {
+  "use strict";
+
+  var modal = document.getElementById("registration-modal");
+  var form = document.getElementById("registration-form");
+  if (!modal || !form) return;
+
+  var CFG = window.ARSALANE_CONFIG || {};
+
+  /* Niveaux réels du centre (section #niveaux / #horaires de ce site).
+     Seul le 2e Bac a une filière confirmée (PC / SVT) : on n'invente rien
+     pour les autres niveaux. Sert de repli tant que registrationOptionsUrl
+     ne répond pas encore côté gestion. */
+  var FALLBACK_LEVELS = [
+    { id: "primaire-5e", label: "Primaire — 5e année" },
+    { id: "primaire-6e", label: "Primaire — 6e année" },
+    { id: "college-1ac", label: "Collège — 1re année" },
+    { id: "college-2ac", label: "Collège — 2e année" },
+    { id: "college-3ac", label: "Collège — 3e année" },
+    { id: "lycee-tc", label: "Lycée — Tronc commun" },
+    { id: "lycee-1bac", label: "Lycée — 1re année Bac" },
+    {
+      id: "lycee-2bac",
+      label: "Lycée — 2e année Bac",
+      tracks: [
+        { id: "pc", label: "PC — Physique-Chimie" },
+        { id: "svt", label: "SVT" }
+      ]
+    }
+  ];
+
+  var panel = modal.querySelector(".reg-modal__panel");
+  var bodyEl = document.getElementById("reg-body");
+  var closeBtn = document.getElementById("reg-close");
+  var levelSelect = document.getElementById("reg-level");
+  var trackField = document.getElementById("reg-track-field");
+  var trackSelect = document.getElementById("reg-track");
+  var nameInput = document.getElementById("reg-name");
+  var studentPhoneInput = document.getElementById("reg-student-phone");
+  var parentPhoneInput = document.getElementById("reg-parent-phone");
+  var submitBtn = document.getElementById("reg-submit");
+  var statusEl = document.getElementById("reg-status");
+
+  var levels = [];
+  var opener = null;
+
+  /* ---- Ouverture / fermeture -------------------------------------- */
+  function openModal(trigger) {
+    opener = trigger || document.activeElement;
+    modal.classList.add("open");
+    modal.setAttribute("aria-hidden", "false");
+    document.body.style.overflow = "hidden";
+    document.addEventListener("keydown", onKeydown);
+    window.setTimeout(function () {
+      if (nameInput) nameInput.focus();
+    }, 10);
+  }
+  function closeModal() {
+    modal.classList.remove("open");
+    modal.setAttribute("aria-hidden", "true");
+    document.body.style.overflow = "";
+    document.removeEventListener("keydown", onKeydown);
+    if (opener && typeof opener.focus === "function") opener.focus();
+  }
+  function onKeydown(e) {
+    if (e.key === "Escape") {
+      closeModal();
+      return;
+    }
+    if (e.key === "Tab") trapFocus(e);
+  }
+  function trapFocus(e) {
+    var focusables = Array.prototype.filter.call(
+      panel.querySelectorAll("input, select, button, a[href]"),
+      function (el) { return !el.disabled && el.offsetParent !== null; }
+    );
+    if (!focusables.length) return;
+    var first = focusables[0];
+    var last = focusables[focusables.length - 1];
+    if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault();
+      first.focus();
+    }
+  }
+
+  Array.prototype.forEach.call(document.querySelectorAll("[data-open-registration]"), function (btn) {
+    btn.addEventListener("click", function (e) {
+      e.preventDefault();
+      openModal(btn);
+    });
+  });
+  if (closeBtn) closeBtn.addEventListener("click", closeModal);
+  modal.addEventListener("click", function (e) {
+    if (e.target.hasAttribute("data-reg-close") || e.target.closest("[data-reg-close]")) closeModal();
+  });
+
+  /* ---- Niveaux / filières ------------------------------------------ */
+  function findLevel(id) {
+    for (var i = 0; i < levels.length; i++) {
+      if (levels[i].id === id) return levels[i];
+    }
+    return null;
+  }
+
+  function fillSelect(select, items, placeholderText) {
+    select.innerHTML = "";
+    var placeholder = document.createElement("option");
+    placeholder.value = "";
+    placeholder.textContent = placeholderText;
+    placeholder.disabled = true;
+    placeholder.selected = true;
+    select.appendChild(placeholder);
+    items.forEach(function (item) {
+      var opt = document.createElement("option");
+      opt.value = item.id;
+      opt.textContent = item.label;
+      select.appendChild(opt);
+    });
+  }
+
+  function updateTracks() {
+    var level = findLevel(levelSelect.value);
+    var tracks = level && level.tracks ? level.tracks : [];
+    if (!tracks.length) {
+      trackField.hidden = true;
+      trackSelect.required = false;
+      trackSelect.value = "";
+      return;
+    }
+    fillSelect(trackSelect, tracks, "Choisir une filière");
+    trackField.hidden = false;
+    trackSelect.required = true;
+  }
+
+  function fillLevels(list) {
+    levels = list;
+    fillSelect(levelSelect, list, "Choisir un niveau");
+    levelSelect.disabled = false;
+    updateTracks();
+  }
+
+  levelSelect.addEventListener("change", updateTracks);
+
+  function loadLevels() {
+    var url = CFG.registrationOptionsUrl;
+    if (!url) {
+      fillLevels(FALLBACK_LEVELS);
+      return;
+    }
+    fetch(url, { headers: { Accept: "application/json" } })
+      .then(function (r) {
+        if (!r.ok) throw new Error("bad status");
+        return r.json();
+      })
+      .then(function (data) {
+        if (data && Array.isArray(data.levels) && data.levels.length) {
+          fillLevels(data.levels);
+        } else {
+          fillLevels(FALLBACK_LEVELS);
+        }
+      })
+      .catch(function () {
+        // Endpoint pas encore en ligne côté gestion : le formulaire reste
+        // utilisable avec les niveaux réels déjà connus de ce site.
+        fillLevels(FALLBACK_LEVELS);
+      });
+  }
+
+  /* ---- Validation ---------------------------------------------------- */
+  function clearErrors() {
+    Array.prototype.forEach.call(form.querySelectorAll(".reg-error"), function (el) { el.textContent = ""; });
+    Array.prototype.forEach.call(form.querySelectorAll(".reg-field"), function (el) { el.classList.remove("has-error"); });
+  }
+  function setFieldError(input, message) {
+    var field = input.closest(".reg-field");
+    if (field) field.classList.add("has-error");
+    var err = form.querySelector('[data-error-for="' + input.id + '"]');
+    if (err) err.textContent = message;
+  }
+  function isValidPhone(value) {
+    var digits = value.replace(/[\s.\-()]/g, "");
+    return /^(?:\+212|0)[5-7]\d{8}$/.test(digits);
+  }
+  function normalizePhone(value) {
+    var digits = value.replace(/[\s.\-()]/g, "");
+    if (digits.indexOf("0") === 0) return "+212" + digits.slice(1);
+    return digits;
+  }
+
+  function validate() {
+    clearErrors();
+    var ok = true;
+    if (!nameInput.value.trim()) {
+      setFieldError(nameInput, "Merci d'indiquer le nom complet de l'élève.");
+      ok = false;
+    }
+    if (!levelSelect.value) {
+      setFieldError(levelSelect, "Veuillez sélectionner un niveau.");
+      ok = false;
+    }
+    if (!trackField.hidden && trackSelect.required && !trackSelect.value) {
+      setFieldError(trackSelect, "Veuillez sélectionner une filière.");
+      ok = false;
+    }
+    if (!studentPhoneInput.value.trim()) {
+      setFieldError(studentPhoneInput, "Merci d'indiquer un numéro de téléphone.");
+      ok = false;
+    } else if (!isValidPhone(studentPhoneInput.value)) {
+      setFieldError(studentPhoneInput, "Veuillez saisir un numéro de téléphone valide.");
+      ok = false;
+    }
+    if (parentPhoneInput.value.trim() && !isValidPhone(parentPhoneInput.value)) {
+      setFieldError(parentPhoneInput, "Veuillez saisir un numéro de téléphone valide.");
+      ok = false;
+    }
+    return ok;
+  }
+
+  /* ---- Envoi ----------------------------------------------------------- */
+  function setStatus(message, kind) {
+    statusEl.textContent = message;
+    statusEl.className = "reg-status" + (kind ? " is-" + kind : "");
+  }
+
+  function applyServerErrors(body) {
+    if (!body || !body.errors) return;
+    var map = {
+      student_full_name: nameInput,
+      level_id: levelSelect,
+      track_id: trackSelect,
+      student_phone: studentPhoneInput,
+      parent_phone: parentPhoneInput
+    };
+    for (var key in body.errors) {
+      if (map[key]) setFieldError(map[key], body.errors[key]);
+    }
+  }
+
+  function showSuccess(message, reference) {
+    var html =
+      '<div class="reg-success">' +
+      '<p class="eyebrow">Demande envoyée ✓</p>' +
+      "<h3>Merci.</h3>" +
+      "<p>" +
+      (message || "Votre demande d'inscription a bien été transmise à Arsalane Soutien. Notre équipe vous contactera prochainement.") +
+      (reference ? '<span class="reg-ref">Référence : ' + reference + "</span>" : "") +
+      "</p>" +
+      '<a class="link-arrow dark" href="#" data-reg-close>Fermer</a>' +
+      "</div>";
+    bodyEl.innerHTML = html;
+    var closeLink = bodyEl.querySelector("[data-reg-close]");
+    if (closeLink) {
+      closeLink.addEventListener("click", function (e) { e.preventDefault(); closeModal(); });
+      closeLink.focus();
+    }
+  }
+
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    if (form.dataset.sending === "1") return;
+    if (form.website && form.website.value) return; // pot de miel
+
+    if (!validate()) return;
+
+    var url = CFG.registrationApiUrl;
+    if (!url) {
+      setStatus("L'inscription en ligne n'est pas encore activée. Vous pouvez appeler le centre au 07 08 30 04 84.", "error");
+      return;
+    }
+
+    var level = findLevel(levelSelect.value);
+    var track = null;
+    if (!trackField.hidden && level && level.tracks) {
+      for (var i = 0; i < level.tracks.length; i++) {
+        if (level.tracks[i].id === trackSelect.value) track = level.tracks[i];
+      }
+    }
+
+    var payload = {
+      student_full_name: nameInput.value.trim(),
+      level_id: levelSelect.value,
+      level_label: level ? level.label : levelSelect.options[levelSelect.selectedIndex].textContent,
+      track_id: track ? track.id : null,
+      track_label: track ? track.label : null,
+      student_phone: normalizePhone(studentPhoneInput.value.trim()),
+      parent_phone: parentPhoneInput.value.trim() ? normalizePhone(parentPhoneInput.value.trim()) : null
+    };
+
+    form.dataset.sending = "1";
+    submitBtn.disabled = true;
+    var originalLabel = submitBtn.textContent;
+    submitBtn.textContent = "Envoi…";
+    setStatus("Envoi en cours…", "");
+
+    fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      body: JSON.stringify(payload)
+    })
+      .then(function (r) {
+        return r.json().catch(function () { return {}; }).then(function (body) {
+          return { ok: r.ok, status: r.status, body: body };
+        });
+      })
+      .then(function (res) {
+        if (res.ok && res.body && res.body.success !== false) {
+          showSuccess(res.body.message, res.body.reference);
+        } else if (res.status === 409) {
+          setStatus((res.body && res.body.message) || "Une demande récente existe déjà avec ces informations.", "error");
+        } else if (res.status === 422 || res.status === 400) {
+          applyServerErrors(res.body);
+          setStatus((res.body && res.body.message) || "Merci de vérifier les informations saisies.", "error");
+        } else {
+          setStatus("Nous n'avons pas pu envoyer votre demande pour le moment. Vérifiez votre connexion et réessayez.", "error");
+        }
+      })
+      .catch(function () {
+        setStatus("Nous n'avons pas pu envoyer votre demande pour le moment. Vérifiez votre connexion et réessayez.", "error");
+      })
+      .finally(function () {
+        form.dataset.sending = "0";
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalLabel;
+      });
+  });
+
+  loadLevels();
 })();
